@@ -1,6 +1,5 @@
 package com.ite.itea.ecommerce.integration.in.controller;
 
-import com.ite.itea.ecommerce.domain.retail.ProductName;
 import com.ite.itea.ecommerce.usecase.dto.ItemRequest;
 import com.ite.itea.ecommerce.usecase.dto.OrderRequest;
 import com.ite.itea.ecommerce.usecase.dto.ReceiptResponse;
@@ -32,21 +31,19 @@ class CheckoutControllerTest {
     private TestRestTemplate testRestTemplate;
 
     @Test
-    void shouldReturnCorrectReceiptWhenSendingRequestWithAPictureNorwayToTheController() {
-        var orderPictureNorway = createItem(ProductName.PICTURE_NORWAY, 2,999);
-        var orderRequest = createOrder(orderPictureNorway);
+    void shouldReturnCorrectReceiptWhenSendingRequestWithAPictureOsloToTheController() {
+        var orderRequest = new OrderRequest(List.of(new ItemRequest("2", 2)));
 
         var entity = this.testRestTemplate.postForEntity("http://localhost:" + this.port + "/checkout", orderRequest, ReceiptResponse.class);
 
         then(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
         then(entity.getBody().priceInCents()).isEqualTo(1998L);
-        then(entity.getBody().text()).isEqualTo("itea \nPicture \"Norway\" 9,99\u00A0€ * 2\nTotal 19,98\u00A0€");
+        then(entity.getBody().text()).isEqualTo("itea \nPicture \"Oslo\" 9,99\u00A0€ * 2\nTotal 19,98\u00A0€");
     }
 
     @Test
     void shouldReturnCorrectReceiptWhenSendingRequestWithAPictureSwedenToTheController() {
-        var orderPictureSweden = createItem(ProductName.PICTURE_SWEDEN, 2, 1299);
-        var orderRequest = createOrder(orderPictureSweden);
+        var orderRequest = new OrderRequest(List.of(new ItemRequest("3", 2)));
 
         var entity = this.testRestTemplate.postForEntity("http://localhost:" + this.port + "/checkout", orderRequest, ReceiptResponse.class);
 
@@ -57,8 +54,7 @@ class CheckoutControllerTest {
 
     @Test
     void shouldReturnCorrectReceiptWhenSendingRequestWithAPictureFinlandToTheController() {
-        var orderPictureFinland = createItem(ProductName.PICTURE_FINLAND, 2, 1499);
-        var orderRequest = createOrder(orderPictureFinland);
+        var orderRequest = new OrderRequest(List.of(new ItemRequest("1", 2)));
 
         var entity = this.testRestTemplate.postForEntity("http://localhost:" + this.port + "/checkout", orderRequest, ReceiptResponse.class);
 
@@ -68,21 +64,19 @@ class CheckoutControllerTest {
     }
 
     @Test
-    void shouldReturnCorrectReceiptWhenSendingRequestWithAChairElsaToTheController() {
-        var orderChairElsa = createItem(ProductName.CHAIR_ELSA, 2, 3000);
-        var orderRequest = createOrder(orderChairElsa);
+    void shouldReturnCorrectReceiptWhenSendingRequestWithAChairOlafToTheController() {
+        var orderRequest = new OrderRequest(List.of(new ItemRequest("6", 2)));
 
         var entity = this.testRestTemplate.postForEntity("http://localhost:" + this.port + "/checkout", orderRequest, ReceiptResponse.class);
 
         then(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
         then(entity.getBody().priceInCents()).isEqualTo(6000L);
-        then(entity.getBody().text()).isEqualTo("itea \nChair \"Elsa\" 30,00\u00A0€ * 2\nTotal 60,00\u00A0€");
+        then(entity.getBody().text()).isEqualTo("itea \nChair \"Olaf\" 30,00\u00A0€ * 2\nTotal 60,00\u00A0€");
     }
 
     @Test
     void shouldReturnCorrectReceiptWhenSendingRequestWithAChairKnutToTheController() {
-        var orderChairKnut = createItem(ProductName.CHAIR_KNUT, 2, 4100);
-        var orderRequest = createOrder(orderChairKnut);
+        var orderRequest = new OrderRequest(List.of(new ItemRequest("7", 2)));
 
         var entity = this.testRestTemplate.postForEntity("http://localhost:" + this.port + "/checkout", orderRequest, ReceiptResponse.class);
 
@@ -93,8 +87,7 @@ class CheckoutControllerTest {
 
     @Test
     void shouldReturnCorrectReceiptWhenSendingRequestWithAChairLarsToTheController() {
-        var orderChairLars = createItem(ProductName.CHAIR_LARS, 2, 5800);
-        var orderRequest = createOrder(orderChairLars);
+        var orderRequest = new OrderRequest(List.of(new ItemRequest("8", 2)));
 
         var entity = this.testRestTemplate.postForEntity("http://localhost:" + this.port + "/checkout", orderRequest, ReceiptResponse.class);
 
@@ -105,8 +98,7 @@ class CheckoutControllerTest {
 
     @Test
     void shouldReturnCorrectReceiptWhenSendingRequestWithATableLottaToTheController() {
-        var orderTableLotta = createItem(ProductName.TABLE_LOTTA, 2, 500);
-        var orderRequest = createOrder(orderTableLotta);
+        var orderRequest = new OrderRequest(List.of(new ItemRequest("5", 2)));
 
         var entity = this.testRestTemplate.postForEntity("http://localhost:" + this.port + "/checkout", orderRequest, ReceiptResponse.class);
 
@@ -117,8 +109,7 @@ class CheckoutControllerTest {
 
     @Test
     void shouldReturnCorrectReceiptWhenSendingRequestWithATableLolaToTheController() {
-        var orderTableLola = createItem(ProductName.TABLE_LOLA, 2, 1300);
-        var orderRequest = createOrder(orderTableLola);
+        var orderRequest = new OrderRequest(List.of(new ItemRequest("4", 2)));
 
         var entity = this.testRestTemplate.postForEntity("http://localhost:" + this.port + "/checkout", orderRequest, ReceiptResponse.class);
 
@@ -128,17 +119,20 @@ class CheckoutControllerTest {
     }
 
     @Test
+    void shouldReturnCorrectReceiptWhenSendingRequestWithAClosetRagnarokToTheController() {
+        var orderRequest = new OrderRequest(List.of(new ItemRequest("10", 4)));
+
+        var entity = this.testRestTemplate.postForEntity("http://localhost:" + this.port + "/checkout", orderRequest, ReceiptResponse.class);
+
+        then(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        then(entity.getBody().priceInCents()).isEqualTo(131996);
+        then(entity.getBody().text()).isEqualTo("itea \nCloset \"Ragnarök\" 329,99\u00A0€ * 4\nTotal 1.319,96\u00A0€");
+    }
+
+    @Test
     void shouldReturn200WhenSendingRequestToManagementEndpoint() {
         var entity = this.testRestTemplate.getForEntity("http://localhost:" + this.actuatorPort + "/actuator", Map.class);
 
         then(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    private OrderRequest createOrder(ItemRequest item) {
-        return new OrderRequest(List.of(item));
-    }
-
-    private ItemRequest createItem(ProductName name, int amount, long price) {
-        return new ItemRequest(name, amount, price);
     }
 }

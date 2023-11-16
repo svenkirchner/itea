@@ -2,11 +2,11 @@ package com.ite.itea.ecommerce.domain.retail;
 
 import com.ite.itea.ecommerce.domain.core.EuroPrice;
 
-public final class Picture extends Product {
+public final class Closet extends Product {
 
     private final EuroPrice price;
 
-    public Picture(ProductId id, String name, EuroPrice price) {
+    public Closet(ProductId id, String name, EuroPrice price) {
         super(id, name);
         this.price = price;
     }
