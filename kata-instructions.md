@@ -1,50 +1,113 @@
-# ITEA 08 - Green Grade: Tell, Don't Ask and Law of Demeter
+# ITEA 11 - Red Grade: Root Cause Analysis
 
 ### Introduction
 
-The ***itea furniture store*** is a new startup that primarily sells furniture and
-home decoration in their stores. You have been hired as a consultant to help
-them in their digital transformation.
+The ***itea furniture store*** is a new startup that primarily sells furniture
+and home decoration in their stores. You have been hired as a consultant to
+help them in their digital transformation.
 
-### Rules
+After the Christmas holidays, you came back to work.
+You are full of energy, so you want to start with cool new features.
+You also saw some nice features for your programming language in a magazine that you would like to test out.
+Unfortunately, you only see bug tickets in the current sprint. "What happened here?" you think. It was not Santa, this is sure!
+You figure out that the colleagues, that were working between the holidays, made some big mistakes. And now you have to fix them.
+So let's go to it.
 
-* Try to apply TDD (test-driven development) as diligently as possible. But *pragmatism > dogma* -- cover business rules,
-  not code lines.
-* Have fun and ask lots of questions!
+### Task 1 - Look through the code and spot the bugs and smash them 🐛
 
-## Task 1 - Analysis and Discussion
+1. What is a bug in general?
 
-Let's have a look into the `invoicing` package.
+Discuss your opinions in the Group
+<details>
+<summary>Solution</summary>
+History:
+The term "bug" was used in an account by computer pioneer Grace Hopper, who publicized the cause of a malfunction in an early electromechanical computer. A typical version of the story is:
 
-### a) **Tell, Don't Ask**<br/>
-Where do objects access other objects' internals to do something with it that the object owning the information could
-easily do itself? Why can this be problematic? (This is sometimes described as walking a dog by commanding its legs to
-move instead of commanding the dog.)
+    In 1946, when Hopper was released from active duty, she joined the Harvard Faculty at the Computation Laboratory where she continued her work on the Mark II and Mark III.
+    Operators traced an error in the Mark II to a moth trapped in a relay, coining the term bug. This bug was carefully removed and taped to the log book.
+    Stemming from the first bug, today we call errors or glitches in a program a bug.
+</details>
 
-### b) **Law of Demeter**<br/>
-Where can we reduce coupling to implementation details by avoiding access to "internals of internals"? Which potential
-problems do you see?
+---
 
-The Law of Demeter is sometimes simplified as "only one dot", e.g., `a.b();` instead of `a.b().c()`.
-Why is this an oversimplification? In which cases is it perfectly fine to chain method calls together? Does saving each
-return value into a local variable solve the problem that the Law of Demeter is concerned with?
+2. What is a bug in the code and Why? 
+
+Discuss every bug with your group and answer the Question: Why does this bug got into the code?
 
 <details>
 <summary>Hint</summary>
-It is about "accessing internals". Can you find examples where a chain of method calls stays on the same abstraction level?
+
+1. You do not have to look in a java class for this one. Maybe there are too many lines somewhere?
+2. One bug ticket has the following description: "After we implemented the 'return Quantities' feature the Quantities are negative sometimes"
 </details>
+<details>
+<summary>Solution</summary>
+
+1. user.csv has a bug
+2. A validation is missing in the `Quantity` class
+</details>
+
+---
+
+3. Is it a technical issue or a misunderstanding of the requirements?
+
+What are the different and why is it important?
+<details>
+<summary>Solution</summary>
+
+1. user.csv has a bug => Technical issue
+2. A validation is missing in the `Quantity` class => Requirements (The old logic should stay but should be extended, not replaced with a new logic)
+</details>
+
+---
+4. How would you fix the bugs?
 
 <details>
 <summary>Solution</summary>
-Examples where a chain of method calls does not violate the Law of Demeter include fluent interfaces like streams (in Java),
-LINQ (in C#), builder pattern, and others. These interfaces often provide a domain-specific language without giving access
-to implementation details.
+
+1. user.csv has a bug - Remove the last line of the csv file that is not used?
+2. A validation is missing in the `Quantity` class - Add the validation and have a thought how you would implement the `return Quantity` feature. Instead of allowing negative Quantities.
 </details>
 
-## Task 2 - Improving the Design
+--- 
 
-Let's refactor towards a better design. We try to hide the details while emphasizing the higher-level concepts, i.e.,
-we try to find good abstractions in the language of the domain.
+### Task 2 - Smash the bugs 🐛
 
-*Remember that these changes should not be done for personal taste, but to keep the code flexible and easy to understand.
-These goals stand above specific principles, which are always context dependent.*
+
+5. Fix the error in the users.csv files
+
+<details>
+<summary>Solution</summary>
+There is an additional new line in the end of the csv file that can be removed but does this fix the problem?
+Have a look at the tests. Do they really test the complete csv file?
+</details>
+
+---
+
+6. Is the bug really fixed or did you only eliminate symptoms but not the root cause?
+
+<details>
+<summary>Solution</summary>
+The real bug is in the CsvFileUserRepository class.
+Instead of using a stream the developer uses an indexed for loop. 
+That is not the problem either but in the line `43` the end range is not correct.
+Insted of going to the end of the list with `i < lines.size()` the developer added a `-1`.
+Perhabs the developer wanted to have something like this `i <= lines.size() -1` to go through the list of elements.
+Unfortunately, the developer forgot the equals symbol and the algorithm is wrong.
+Instead of investigating the mistake an additional line was added in the users.csv file.
+This just postpones the bug until someone creates a new csv file or updates the existing one.
+</details>
+
+### Task 3 - Merge conflicts
+
+Commit aa57406 is a merge commit where a conflict has been resolved.
+What caused that conflict? What may have caused the cause of the conflict?
+How could similar merge conflicts be prevented in the future?
+
+### Root Cause Analysis
+
+A rule from the very first day as a CCD should be to always search for the root cause of an issue.
+Clean code developers do not consider themselves satisfied with healing symptoms. 
+Example: Sorting data in memory is too slow. A symptom cure would strive to speed up single instructions or instruction blocks.
+Maybe unsafe code or parallelization becomes an option. A thorough root cause analysis would have shown that the chosen sort algorithm is the real culprit.
+Hard to understand low level optimizations hence can be avoided by choosing a better algorithm.
